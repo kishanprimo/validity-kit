@@ -13,6 +13,7 @@ class ValidateLicense
      * Paths that must stay reachable without an existing token.
      */
     protected const ALWAYS_EXCEPT = [
+        '/',
         'license/validate',
         'api/license/validate',
     ];
@@ -31,8 +32,10 @@ class ValidateLicense
             (array) config('validity-kit.middleware.except', [])
         );
 
-        if ($request->is(...$except)) {
-            return $next($request);
+        foreach ($except as $path) {
+            if ($request->is($path)) {
+                return $next($request);
+            }
         }
 
         if (!$this->validator->checkTokenVerifyTokenRecreation()) {
